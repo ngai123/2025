@@ -1,0 +1,178 @@
+# ============================================
+# LOGS
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# NODE.JS / FRONTEND
+# ============================================
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+.vite/
+.next/
+out/
+
+# Testing
+coverage/
+
+# ============================================
+# PYTHON / BACKEND
+# ============================================
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+myenv/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ============================================
+# ENVIRONMENT VARIABLES
+# ============================================
+.env
+.env.development
+.env.production
+.env.mobile
+.env.test.local
+.env.production.local
+.env.local
+.env.*.local
+*.local
+!.env.example
+
+# ============================================
+# DATABASE
+# ============================================
+*.db
+*.sqlite3
+*.sql
+
+# ============================================
+# FIREBASE
+# ============================================
+.firebase/                      
+firebase-debug.log              
+firestore-debug.log             
+**/firebase-debug*.log          
+.firebaserc                     
+ui-debug.log                    
+
+# ============================================
+# IDEs & EDITORS
+# ============================================
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# JetBrains
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+
+# Visual Studio
+.vs/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ============================================
+# OS FILES
+# ============================================
+.DS_Store
+.AppleDouble
+Thumbs.db
+Desktop.ini
+
+# ============================================
+# TEMPORARY & CACHE
+# ============================================
+.cache/
+.temp/
+.tmp/
+*.tmp
+*.bak
+
+# ============================================
+# SECURITY (Extra protection)
+# ============================================
+*secret*
+*SECRET*
+credentials.json
+serviceAccountKey.json
+*-key.json
+*.pem
+*.key
+
+# ============================================
+# UPLOADS (if you implement file uploads)
+# ============================================
+uploads/
+media/
+static/uploads/
+
+# Backup files
+*.backup
+
+<<<<<<< HEAD
+# Ignore files
+cloud-sql-proxy.exe
+project-aura-credentials-key.json
+cloud-sql-proxy
+Service-account-key.json
+start-cloud-sql-proxy.bat
+alembic
+# Google Service Account Key - DO NOT COMMIT
+C:\Users\user\Desktop\Auras-gitlab\credentials\project-aura-475314-49f5cc20003a.json
+C:/Users/nabilaha/Desktop/trigomuda-project-aura/Project-Aura-Development/backend/credentials/project-aura-475314-b2905eca0fd5.json
+
+# Photos
+KL3A4759.jpg
+KL3A4825.jpg
+KL3A6314.jpg
+KL3A6383.jpg
+KL3A8788.jpg
+KL3A8789.jpg
+
+nul
+../nul
+
+# Ignore folder
+Database Scripts/
+Google Cloud SQL/
+Project Documentation/
+backend/app/config/
+Summaries/

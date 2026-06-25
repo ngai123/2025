@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -----------------------------
+   Custom Global Styles
+   ----------------------------- */
+
+/* Reset box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Smooth font rendering */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Height cascade for iOS PWA - ensures percentage heights work */
+html, body {
+  height: 100%;
+  overflow: hidden; /* Prevent body scroll, let components handle scrolling */
+}
+
+#root {
+  height: 100%;
+  overflow: visible; /* Allow safe-area content to render */
+}
+
+/* Remove default padding/margin */
+body, h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Body defaults */
+body {
+  font-family: 'Josefin Sans', ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  background-color: var(--color-bg-primary);
+  /* color: var(--color-text-primary); */
+  line-height: 1.5;
+
+  /* iOS Safe Area Support - Add padding for notch/home indicator */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Utility class requested by design */
+.josefin-sans-uniquifier {
+  font-family: "Josefin Sans", sans-serif;
+}
+
+/* Prevent global border overrides */
+div, section, article, header, footer, button {
+  border: none;
+  background: none;
+}
+
+/* Avoid globally resetting buttons to preserve Tailwind utility classes */
+/* If a reset is needed in a specific component, create a scoped class */
+/* .button-reset { all: unset; display: inline-flex; justify-content; align-items: center; cursor: pointer; } */
+
+/* iOS Safe Area Utility Classes */
+.fixed-header {
+  padding-top: calc(env(safe-area-inset-top) + 1rem);
+}
+
+.fixed-bottom-nav {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+}
+
+/* Hide scrollbar on iOS devices (WebKit-based) */
+@supports (-webkit-touch-callout: none) {
+  html, body, * {
+    scrollbar-width: none; /* iOS Firefox if available */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  *::-webkit-scrollbar {
+    display: none; /* Hide scrollbar in iOS Safari/Chrome */
+    width: 0;
+    height: 0;
+  }
+}
+
+/* -----------------------------
+   Date input adjustments
+   ----------------------------- */
+/* Hide native calendar icon to avoid duplicate with custom icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+/* Normalize appearance across browsers */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* -----------------------------
+   iOS Button/Input Styling Fixes
+   ----------------------------- */
+/* Remove iOS default button/input styling */
+button, input, textarea, select {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* Fix iOS input zoom on focus - minimum 16px prevents zoom */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Remove iOS tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========================================
+   DATE PICKER PLACEHOLDER COLOR FIX
+   Must be at the END of main.css
+   ======================================== */
+
+/* Override inherited body color for date picker ONLY */
+.custom-datepicker input,
+.custom-datepicker .MuiInputBase-input,
+.custom-datepicker .MuiOutlinedInput-input {
+  /* Remove the inherited color from body */
+  color: unset !important;
+}
+
+/* Set placeholder color when empty */
+.custom-datepicker input:placeholder-shown,
+.custom-datepicker input[value=""],
+.custom-datepicker .MuiInputBase-input:placeholder-shown,
+.custom-datepicker .MuiInputBase-input[value=""] {
+  color: #9CA3AF !important;
+  -webkit-text-fill-color: #9CA3AF !important;
+}
+
+/* Set black color when date is selected */
+.custom-datepicker input:not(:placeholder-shown):not([value=""]),
+.custom-datepicker .MuiInputBase-input:not(:placeholder-shown):not([value=""]),
+.custom-datepicker .MuiOutlinedInput-input:not(:placeholder-shown):not([value=""]) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Force placeholder text to be gray */
+.custom-datepicker input::placeholder,
+.custom-datepicker .MuiInputBase-input::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9CA3AF !important;
+}
+
+/* Avoid globally resetting buttons to preserve Tailwind utility classes */
+/* If a reset is needed in a specific component, create a scoped class */
+/* .button-reset { all: unset; display: inline-flex; justify-content: center; align-items: center; cursor: pointer; } */
+
+/* ========================================
+   GLOBAL MUI FONT OVERRIDE
+   Ensures all MUI components use Josefin Sans
+   ======================================== */
+
+/* Typography and Text Elements */
+.MuiTypography-root,
+.MuiTypography-body1,
+.MuiTypography-body2,
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3,
+.MuiTypography-h4,
+.MuiTypography-h5,
+.MuiTypography-h6,
+.MuiTypography-subtitle1,
+.MuiTypography-subtitle2,
+.MuiTypography-caption,
+.MuiTypography-overline {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Input Components */
+.MuiInputBase-root,
+.MuiInputBase-input,
+.MuiOutlinedInput-root,
+.MuiOutlinedInput-input,
+.MuiFilledInput-root,
+.MuiFilledInput-input,
+.MuiInput-root,
+.MuiInput-input,
+.MuiTextField-root,
+.MuiInputLabel-root,
+.MuiFormLabel-root,
+.MuiFormHelperText-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Select and Dropdown Components */
+.MuiSelect-root,
+.MuiSelect-select,
+.MuiSelect-nativeInput,
+.MuiNativeSelect-root,
+.MuiNativeSelect-select,
+.MuiMenuItem-root,
+.MuiMenu-root,
+.MuiMenu-paper,
+.MuiMenu-list,
+.MuiListItem-root,
+.MuiListItemText-root,
+.MuiListItemText-primary,
+.MuiListItemText-secondary {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Button Components */
+.MuiButton-root,
+.MuiButton-label,
+.MuiIconButton-root,
+.MuiButtonBase-root,
+.MuiFab-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Chip, Badge, and Tooltip Components */
+.MuiChip-root,
+.MuiChip-label,
+.MuiBadge-root,
+.MuiTooltip-tooltip,
+.MuiTooltip-popper {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Dialog and Modal Components */
+.MuiDialog-root,
+.MuiDialog-paper,
+.MuiDialogTitle-root,
+.MuiDialogContent-root,
+.MuiDialogContentText-root,
+.MuiDialogActions-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Tab and Navigation Components */
+.MuiTab-root,
+.MuiTabs-root,
+.MuiTabPanel-root,
+.MuiAppBar-root,
+.MuiToolbar-root,
+.MuiBottomNavigation-root,
+.MuiBottomNavigationAction-root,
+.MuiBottomNavigationAction-label {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Card and Paper Components */
+.MuiCard-root,
+.MuiCardHeader-root,
+.MuiCardHeader-title,
+.MuiCardHeader-subheader,
+.MuiCardContent-root,
+.MuiCardActions-root,
+.MuiPaper-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Table Components */
+.MuiTable-root,
+.MuiTableCell-root,
+.MuiTableHead-root,
+.MuiTableBody-root,
+.MuiTableRow-root,
+.MuiTablePagination-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Slider, Checkbox, Radio Components */
+.MuiSlider-root,
+.MuiSlider-markLabel,
+.MuiSlider-valueLabel,
+.MuiCheckbox-root,
+.MuiRadio-root,
+.MuiFormControlLabel-root,
+.MuiFormControlLabel-label,
+.MuiSwitch-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Autocomplete Components */
+.MuiAutocomplete-root,
+.MuiAutocomplete-input,
+.MuiAutocomplete-listbox,
+.MuiAutocomplete-option,
+.MuiAutocomplete-paper,
+.MuiAutocomplete-popper {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Alert and Snackbar Components */
+.MuiAlert-root,
+.MuiAlert-message,
+.MuiSnackbar-root,
+.MuiSnackbarContent-root,
+.MuiSnackbarContent-message {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Stepper Components */
+.MuiStepper-root,
+.MuiStep-root,
+.MuiStepLabel-root,
+.MuiStepLabel-label,
+.MuiStepContent-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Breadcrumb and Pagination */
+.MuiBreadcrumbs-root,
+.MuiBreadcrumbs-li,
+.MuiPagination-root,
+.MuiPaginationItem-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Date/Time Picker Components */
+.MuiPickersDay-root,
+.MuiPickersCalendarHeader-root,
+.MuiPickersCalendarHeader-label,
+.MuiPickersYear-root,
+.MuiPickersMonth-root,
+.MuiDateCalendar-root,
+.MuiYearCalendar-root,
+.MuiMonthCalendar-root,
+.MuiPickersPopper-root,
+.MuiPickersLayout-root,
+.MuiPickersToolbar-root,
+.MuiDatePickerToolbar-root {
+  font-family: 'Josefin Sans', sans-serif !important;
+}
+
+/* Catch-all for any MUI components that may have been missed */
+[class*="Mui"] {
+  font-family: 'Josefin Sans', sans-serif !important;
+}

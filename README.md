@@ -12,3 +12,4 @@ Master directory for all 2025 competition, hackathon, and project work.
 | `UMACT2025/` | UMACT 2025 | Auto-tagging system for complaint classification (BERT + ML pipeline with Flask frontend) |
 | `ROBOCON2025/` | ROBOCON 2025 | Robot control firmware — ESP32 master controller + 2 Arduino Uno subsystems (locomotion & shooter) |
 | `SharkTankUKM2025/` | Shark Tank UKM 2025 | Object detection app — YOLO & CODA ML models with Flutter mobile frontend and TFLite/ONNX conversion pipeline |
+| `GoogleCloudHackathon2025/` | Google Cloud Hackathon Malaysia (2nd Runner-Up) | Project Aura — AI relationship-coaching platform (Team GAIA Aura). FastAPI + React, RAG over relationship books with FAISS, deployed on Google Cloud Run |

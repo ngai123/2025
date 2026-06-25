@@ -1,0 +1,894 @@
+/* EditProfile.css - Extracted from EditProfile.jsx for better performance */
+
+.edit-profile-container {
+  max-width: 430px; /* iPhone 16 Pro Max logical width */
+  width: 100%;
+  height: 100%; /* Fill available space from parent */
+  margin: 0 auto;
+  padding: 0 24px;
+  padding-bottom: 80px;
+  background-color: var(--color-bg-primary);
+  overflow-y: auto; /* Enable internal scrolling */
+  overflow-x: hidden; /* avoid horizontal scroll from absolutely-positioned elements */
+  -webkit-overflow-scrolling: touch; /* Smooth iOS scrolling */
+}
+
+.header {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg-primary);
+  z-index: 10;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.header button {
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.text-primary {
+  color: var(--color-accent);
+}
+
+.main-content {
+  padding: 16px 0 24px;
+}
+
+.section {
+  margin-bottom: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+/* Add spacing when the title is a direct child of section */
+.section > .section-title {
+  margin-bottom: 0.5rem;
+}
+
+/* Consistent spacing for rows using a single gap source */
+.fields-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.photo-slot-container {
+  position: relative;
+}
+
+.photo-slot {
+  width: 100%;
+  height: 120px;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  background-color: var(--color-bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.photo-slot.has-image {
+  background-color: transparent;
+}
+
+.photo-slot.has-image .icon-content {
+  display: none;
+}
+
+.photo-slot.is-loading {
+  pointer-events: none; /* Disable interactions during loading */
+  position: relative;
+}
+
+/* Theme-aware overlay that works for both light and dark modes */
+.photo-slot.is-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Use a linear-gradient with your RGB variables for better compatibility */
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--color-bg-primary-rgb), 0.8),
+    rgba(var(--color-bg-primary-rgb), 0.6)
+  );
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1;
+  border-radius: 1rem;
+}
+
+/* Loading spinner container with theme-aware background */
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Theme-aware background for spinner container */
+  background: var(--color-bg-secondary);
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* For dark theme, adjust the shadow */
+body.theme-dark .loading-overlay {
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Optional: Add a subtle animation to indicate processing */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.photo-slot.is-loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.icon-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon-content .material-icons-outlined {
+  font-size: 1.875rem;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+}
+
+.slot-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.delete-button, .add-button {
+  position: absolute;
+  bottom: 0.25rem; /* keep inside slot bounds to prevent overflow */
+  right: 0.25rem;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  padding: 0.25rem;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+}
+
+.delete-button-prompt {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  cursor: pointer;
+  margin-left: auto;
+  align-self: center;
+  padding: 0.5rem;
+}
+
+.delete-button-prompt .material-icons-outlined {
+  font-size: 20px;
+}
+
+.delete-button .material-icons-outlined,
+.add-button .material-icons-outlined {
+  font-size: 14px;
+}
+
+/* Adjusted for tighter spacing */
+.verify-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box; /* prevents slight overflow */
+  cursor: pointer;
+}
+
+.verify-info {
+  display: flex;
+  align-items: center;
+}
+
+.verify-info .material-icons-outlined {
+  color: var(--color-accent);
+  margin-right: 0.75rem;
+}
+
+.verify-status {
+  display: flex;
+  align-items: center;
+}
+
+.verify-status span:first-child {
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.about-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  font-family: inherit;
+  resize: none; /* changed from vertical to none, as we'll auto resize */
+  min-height: 80px;
+  color: var(--color-text-primary);
+  line-height: 1.5; /* ensure consistent line spacing */
+  box-sizing: border-box; /* important for consistent sizing */
+}
+
+.about-textarea.static-text {
+  border: 1px solid transparent; /* Make border transparent when static */
+  cursor: default; /* Change cursor when not editable */
+  padding: 0.75rem; /* Ensure consistent padding */
+  word-wrap: break-word; /* Break long words */
+  line-height: 1.5; /* ensure consistent line spacing for p tag */
+  box-sizing: border-box; /* important for consistent sizing */
+}
+
+.about-textarea:focus {
+  border-color: var(--color-accent); /* Highlight border when editing */
+  outline: none;
+}
+
+/* PROMPT STYLES */
+.prompt-card {
+  background-color: var(--color-bg-secondary);
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.prompt-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: var(--color-bg-secondary);
+  font-family: inherit;
+  font-size: 1rem;
+  appearance: none; /* Remove default arrow */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23666'%3e%3cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.5em;
+  color: var(--color-text-primary);
+  /* Prevent text overlap with right-aligned icon */
+  white-space: nowrap; /* Keep text on one line */
+  overflow: hidden;    /* Hide overflowing text */
+  text-overflow: ellipsis; /* Show "..." for hidden text */
+  padding-right: 2.5rem; /* Increase right padding to make space for the checkmark */
+}
+
+.prompt-answer-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 50px;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+}
+
+.interests-container {
+  background-color: var(--color-bg-secondary);
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+}
+
+.interests-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.edit-button {
+  color: var(--color-accent);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.interests-description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.interests-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.interest-tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.875rem;
+  display: flex; /* Makes it a flex container */
+  align-items: center; /* Vertically centers items */
+}
+
+.interest-tag:hover {
+  transform: scale(1.05);
+}
+
+.interest-tag.selected {
+  background-color: var(--color-accent);
+  color: white;
+  gap: 0.3rem;
+}
+
+.interest-tag.unselected {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+.dropdown-container {
+  position: relative;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+/* Editable rows rely on group gap, not individual margins */
+.editable-field-container { margin-bottom: 0; }
+
+.dropdown-trigger, .editable-field-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: var(--color-bg-secondary);
+  box-sizing: border-box;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.field-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  flex-shrink: 0; /* Prevent this section from shrinking */
+  flex-grow: 0; /* Don't let it grow unnecessarily */
+  white-space: nowrap; /* Prevent the label text from wrapping */
+}
+
+/* Fix iOS Safari blue color on field labels */
+.field-info span {
+  color: var(--color-text-primary);
+}
+
+.field-info .material-icons-outlined {
+  color: var(--color-text-secondary);
+  margin-right: 0.75rem;
+  display: inline-block; /* Ensure it's not hidden by default */
+  min-width: 24px; /* Give it a guaranteed minimum width */
+  text-align: center; /* Center the icon within its space */
+}
+
+.field-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 1; /* Allow this section to shrink if needed */
+  flex-grow: 1; /* Allow this section to grow to fill available space */
+  justify-content: flex-end; /* Push content to the right */
+  text-align: right; /* Ensure text is right-aligned */
+}
+
+.field-value span:first-child {
+  color: var(--color-text-primary);
+  margin-right: 0.5rem;
+  white-space: nowrap; /* Prevent the value text from wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis (...) for overflowing text */
+}
+
+.field-value .material-icons-outlined {
+  color: var(--color-text-primary);
+  font-size: 20px;
+}
+
+/* To make the arrow in the EditableField (e.g., "Come From") smaller */
+.editable-field-container .field-value .material-icons-outlined {
+  font-size: 15px;
+}
+
+.verify-status .material-icons-outlined {
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-option {
+  width: 100%;
+  padding: 0.75rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-option:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.dropdown-option.selected {
+  background-color: #FF7F7F;
+  color: white;
+}
+
+.editable-input {
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: right;
+  outline: none;
+  min-width: 100px;
+}
+
+.editable-input:focus {
+  background-color: rgba(255, 127, 127, 0.1);
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Love Style Styles */
+.love-style-card {
+  background-color: var(--color-bg-secondary);
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.love-style-character {
+  width: 150px;
+  height: 150px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-primary);
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+}
+
+.love-style-icon {
+  font-size: 80px !important;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.love-style-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.love-style-badge {
+  background-color: var(--color-accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+}
+
+.love-style-type {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.love-style-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.trait-tag {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.love-style-compatibility {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.compatibility-percentage {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.compatibility-text {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.love-style-description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.love-style-toggle {
+  margin-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background-color: var(--color-bg-primary);
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 0.4rem 0.8rem;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+/* Personality Analysis Report Styles */
+.analysis-card {
+  background-color: var(--color-bg-secondary);
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.analysis-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.analysis-icon-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent), #FFA0A0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.analysis-icon-container .material-symbols-outlined {
+  font-size: 28px;
+  color: white;
+}
+
+.analysis-title-group h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.analysis-title-group p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.analysis-content {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.analysis-content strong {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.analysis-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--color-text-secondary);
+}
+
+.analysis-empty-icon {
+  font-size: 48px !important;
+  color: var(--color-accent);
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.analysis-cta-button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-accent), #FFA0A0);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.analysis-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 127, 127, 0.4);
+}
+
+.static-value {
+  color: var(--color-text-primary);
+  margin-right: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; /* Adjust as needed to ensure truncation is visible */
+  display: inline-block; /* Needed for text-overflow to work */
+  text-align: right; /* Align with input */
+}
+
+.loading-indicator-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.full-page-saving-overlay {
+  position: fixed; /* Covers the entire viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Theme-aware background for the overlay */
+  background: rgba(var(--color-bg-primary-rgb), 0.8);
+  backdrop-filter: blur(3px); /* Adds a nice blur effect to the content below */
+  -webkit-backdrop-filter: blur(3px); /* For Safari */
+  z-index: 100; /* Ensure it's on top of all other content */
+  pointer-events: auto; /* Block interaction with the page while saving */
+}
+
+.cropper-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's on top of everything */
+}
+
+.cropper-modal-content {
+  background-color: var(--color-bg-primary);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 90%;
+  max-width: 400px; /* Adjust as needed */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cropper-container {
+  position: relative;
+  width: 100%;
+  height: 250px; /* Adjust cropper height */
+  background: #333; /* Dark background for cropper area */
+}
+
+.cropper-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.zoom-range {
+  width: 100%;
+  -webkit-appearance: none; /* Override default slider styles */
+  appearance: none;
+  height: 8px;
+  background: var(--color-bg-hover);
+  outline: none;
+  border-radius: 4px;
+}
+
+.zoom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: pointer;
+}
+
+.zoom-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  cursor: pointer;
+}
+
+.cropper-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.cropper-buttons .edit-button {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cropper-buttons .edit-button:first-child { /* Cancel button */
+  background-color: var(--color-text-secondary);
+}
+
+.cropper-buttons .edit-button:first-child:hover {
+  background-color: #555;
+}
+
+.cropper-buttons .edit-button:hover {
+  background-color: #FF9999;
+}

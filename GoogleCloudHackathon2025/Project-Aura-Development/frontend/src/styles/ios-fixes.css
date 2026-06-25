@@ -1,0 +1,60 @@
+/**
+ * iOS-Specific Fixes
+ * Conservative fixes that only apply to iOS devices without breaking desktop
+ */
+
+/* iOS Safe Area Variables - fallback values if not supported */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+/* iOS-specific fixes using feature detection */
+@supports (-webkit-touch-callout: none) {
+  /* This targets iOS Safari specifically */
+
+  /* Fix for input zoom on iOS - prevent zoom when focusing inputs */
+  input, select, textarea {
+    font-size: max(16px, 1em); /* Prevents zoom on focus */
+  }
+
+  /* Fix for button active states - remove tap highlight */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling for iOS */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* iOS PWA specific fixes */
+@media (display-mode: standalone) {
+  /* When running as PWA on iOS - full screen mode */
+
+  /* Ensure proper safe area handling in PWA mode */
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Utility classes for safe areas */
+.safe-area-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+}
+
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px);
+}
+
+.safe-area-left {
+  padding-left: max(env(safe-area-inset-left, 0px), 0px);
+}
+
+.safe-area-right {
+  padding-right: max(env(safe-area-inset-right, 0px), 0px);
+}

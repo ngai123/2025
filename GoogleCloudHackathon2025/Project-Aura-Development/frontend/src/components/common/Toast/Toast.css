@@ -1,0 +1,101 @@
+/* src/components/common/Toast/Toast.css */
+
+.toast-container {
+  position: fixed;
+  top: 20px; /* Adjust position as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Ensure it's above other content */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none; /* Allow clicks to pass through container */
+}
+
+.toast-notification {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* This is now the sole source of spacing between items */
+  padding: 12px 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 280px;
+  max-width: 90vw;
+  pointer-events: all;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+.toast-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-notification.hide {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.toast-notification.success {
+  background-color: var(--color-bg-secondary); /* Use secondary background */
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-accent); /* Accent border for success */
+}
+
+.toast-notification.error {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  /* Option 1: Keep hardcoded red for clear error indication */
+  border: 1px solid #FF0000; 
+  /* Option 2: Use a theme variable if you have one for error, e.g., var(--color-error) */
+}
+
+.toast-notification.info {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-accent); /* <--- CHANGE THIS: Use accent color for info border */
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+}
+
+.toast-icon .material-icons-outlined {
+  font-size: 24px;
+}
+
+.toast-notification.success .toast-icon .material-icons-outlined {
+  color: var(--color-accent); /* Accent color for success icon */
+}
+
+.toast-notification.error .toast-icon .material-icons-outlined {
+  color: #FF0000; /* <--- CHANGE THIS: Use hardcoded red for error icon, or var(--color-error) */
+}
+
+.toast-notification.info .toast-icon .material-icons-outlined {
+  color: var(--color-accent); /* <--- CHANGE THIS: Use accent color for info icon */
+}
+
+.toast-message {
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.toast-close-button {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.toast-close-button:hover {
+  color: var(--color-text-primary);
+}
+
+.toast-close-button .material-icons-outlined {
+  font-size: 20px;
+}

@@ -1,0 +1,9 @@
+# File: requirements-dev.txt
+# Author: Christian Lew
+# Date: October 21, 2025
+# Description: Development tools (NOT needed in production)
+
+# Development Tools (optional - remove in production)
+black==25.9.0
+flake8==7.3.0
+pytest==8.4.2

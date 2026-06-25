@@ -1,0 +1,569 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
+
+    :root {
+        /* Light Mode Colors */
+        --bg-primary-light: #F9F4E2;
+        --bg-secondary-light: #FFFFFF;
+        --text-primary-light: #00000;
+        --text-secondary-light: #6B7280;
+        --accent-red: #FF7F7F;
+        --accent-pink: #FFBEBE;
+
+        /* Dark Mode Colors */
+        --bg-primary-dark: #121212;
+        --bg-secondary-dark: #1E1E1E;
+        --text-primary-dark: #E0E0E0;
+        --text-secondary-dark: #9CA3AF;
+        --gray-100: #f3f4f6;
+        --gray-700: #374151;
+
+        --radius-2xl: 1.5rem;
+        --radius-full: 9999px;
+        /* Alias for unified background reference used by Discover */
+        --color-bg-primary: var(--bg-primary-light);
+    }
+
+    .josefin-sans {
+        font-family: "Josefin Sans", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 12;
+        font-style: normal;
+    }
+
+/* ✅ EDIT #1: MAIN CONTAINER - Applied exact padding from .etanWm */
+.profile-body {
+    font-family: 'Josefin Sans', sans-serif;
+    /* iOS Fix: Removed min-height to prevent nested 100vh issues when rendered inside MainPage */
+    height: 100%; /* Fill ContentWrapper height */
+    background: var(--color-bg-primary);
+    color: var(--text-primary-light);
+    overflow-x: hidden;
+    overflow-y: visible; /* iOS Fix: Let ContentWrapper handle scrolling */
+
+    /* ✅ EDIT #1b: Applied EXACT padding from .etanWm */
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px; /* ✅ Horizontal padding 8px (from .etanWm) */
+    max-width: 393px; /* ✅ max-width from .etanWm */
+    margin: 0 auto; /* ✅ Center alignment */
+    position: relative;
+    --bottom-nav-height: 64px;
+    /* iOS Fix: Removed duplicate padding-bottom - PageWrapper already has it */
+}
+    
+    .profile-body.dark {
+        /* Make alias reflect dark mode background */
+        --color-bg-primary: var(--bg-primary-dark);
+        background-color: var(--bg-primary-dark);
+        color: var(--text-primary-dark);
+    }
+
+    /* --- Utility and Layout --- */
+    .max-w-sm { max-width: 24rem; margin-left: auto; margin-right: auto; }
+    .p-4 { padding: 1rem; }
+    .pt-16 { padding-top: 3rem; }
+    .pb-4 { padding-bottom: 1rem; }
+    .space-y-6 > * + * { margin-top: 1.5rem; }
+    .flex { display: flex; }
+    .justify-between { justify-content: space-between; }
+    .items-center { align-items: center; }
+    .fixed { position: fixed; }
+    .top-0 { top: 0; }
+    .w-full { width: 100%; }
+    .z-10 { z-index: 10; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .text-sm { font-size: 0.975rem; }
+    .text-3xl { font-size: 1.875rem; }
+    .font-bold { font-weight: 700; }
+    .text-lg { font-size: 1.125rem; }
+
+    /* --- Component Classes --- */
+
+/* ✅ EDIT #2: HEADER - Applied exact padding from .profile-header */
+.profile-header {
+    /* Remove box element visuals */
+    box-shadow: none;
+
+    /* Default: Desktop/standard browser styling */
+    position: sticky;
+    top: 0;
+    margin-left: -16px;  /* Extend left to cancel BOTH PageWrapper (8px) + profile-body (8px) padding */
+    margin-right: -16px; /* Extend right to cancel BOTH PageWrapper (8px) + profile-body (8px) padding */
+    padding-left: 8px;  /* Add back spacing for content */
+    padding-right: 8px; /* Add back spacing for content */
+    padding-top: max(12px, env(safe-area-inset-top)); /* Add safe area support for iOS notch */
+    margin-bottom: 10px; /* Space between header and first image */
+    background-color: var(--color-bg-primary); /* Match parent background to hide content behind */
+    z-index: 30; /* Above content but below modals */
+}
+
+/* iOS-specific: Standalone web app mode (uses different positioning to prevent horizontal scroll) */
+@media all and (display-mode: standalone) {
+    .profile-header {
+        /* iOS web app: Use relative positioning instead of negative margins */
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin-left: -8px;  /* Only cancel profile-body padding */
+        margin-right: -8px; /* Only cancel profile-body padding */
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+
+/* iOS Safari-specific: Detect iOS by -webkit-touch-callout support */
+@supports (-webkit-touch-callout: none) {
+    .profile-header {
+        /* iOS Safari: Use constrained approach to prevent overflow */
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+}
+
+    @media (max-height: 700px) {
+      .profile-header {
+        margin-bottom: 12px; /* Slightly larger space on short screens */
+        padding-top: max(8px, env(safe-area-inset-top)); /* Compact top padding on short screens */
+      }
+    }
+
+    /* Remove dark background from header box */
+    .profile-body.dark .profile-header { background-color: var(--bg-primary-dark); }
+    
+/* ✅ EDIT #3: PROFILE IMAGE CONTAINER - Applied exact sizing */
+.profile-img-container {
+    /* Defines the "div width" and "div height" from your diagram */
+    width: 100%;
+    height: 555px; /* ✅ Exact height */
+
+    /* Crucial for centering and maintaining the boundaries */
+    overflow: hidden; 
+
+    /* Optional: Helps position the image inside */
+    position: relative; 
+    border-radius: var(--radius-2xl);
+}
+
+    .profile-img-container img {
+        /* Scales the image to fit the container */
+        width: 100%; 
+        height: 100%;
+        
+        /* Alternatively, use 'cover' to fill the space and clip edges */
+        object-fit: cover; /* ✅ Exact object-fit property */
+    }
+
+/* ✅ EDIT #4: IMAGE OVERLAY - Applied exact gradient */
+.profile-img-overlay {
+    background-image: linear-gradient(to bottom,
+        rgba(0, 0, 0, 0.5) 0px,    /* Start the semi-transparent black at the very top */
+        rgba(0, 0, 0, 0.5) 10px,   /* Keep it semi-transparent black until 10px */
+        transparent 300px);         /* ✅ Exact gradient values */
+    color: white;
+}
+
+/* Ensure all profile images have rounded edges */
+.profile-img {
+    border-radius: var(--radius-2xl);
+}
+
+/* Rounded edges for images inside prompts/cards */
+.prompt-item img,
+.card img {
+    border-radius: var(--radius-2xl);
+}
+
+/* ✅ EDIT #5: PROFILE BODY HORIZONTAL PADDING - Explicit gutters */
+.profile-body {
+    padding-left: 8px; /* ✅ CHANGED FROM: 10px TO: 8px (from .etanWm) */
+    padding-right: 8px; /* ✅ CHANGED FROM: 10px TO: 8px (from .etanWm) */
+    max-width: 393px; /* Align width with container on larger screens */
+    margin: 0 auto;
+}
+
+@media (max-height: 700px) {
+  .profile-body {
+    padding-left: 8px; /* ✅ Keep consistent across heights */
+    padding-right: 8px; /* ✅ Keep consistent across heights */
+    max-width: 393px; /* ✅ Maintain container width across heights */
+  }
+}
+
+/* Blurred background preview container for next profile */
+.background-preview {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 555px;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+}
+
+/* Error/Fallback overlay should sit behind BottomNav (z-index: 100) */
+.fallback-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fallback-card {
+    max-width: 420px;
+    width: 90%;
+    background: var(--bg-secondary-light);
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 16px;
+}
+
+/* Swipe overlay icon sizing */
+.overlay-icon {
+    width: 56px;
+    height: 56px;
+}
+
+/* GIF used for left-swipe (nope) overlay */
+.overlay-gif {
+    width: 600px;
+    height: 120;
+}
+
+    .goal-tag-image {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-full);
+        color: white;
+        font-weight: 600;
+    }
+
+    .card {
+        border-radius: var(--radius-2xl);
+    }
+    .profile-body.dark .card { 
+        background-color: var(--bg-secondary-dark); 
+        box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.05);
+    }
+
+    .goal-tag-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--gray-100);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        color: var(--text-primary-light);
+        font-weight: 600;
+    }
+    .profile-body.dark .goal-tag-card {
+        background-color: var(--gray-700);
+        color: var(--text-primary-dark);
+    }
+
+    .chip-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .basic-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--gray-100);
+        padding: 0.375rem 0.75rem;
+        border-radius: var(--radius-full);
+        font-size: 0.875rem;
+    }
+    
+    .profile-body.dark .basic-chip {
+         background-color: var(--gray-700); 
+         color: var(--text-primary-dark);
+    }
+
+    .interest-chip-highlight {
+        background-color: var(--accent-pink);
+        color: var(--accent-red);
+        font-weight: 600;
+    }
+
+    /* Lucide Icon styling */
+    .icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+    .icon-small {
+        width: 12px;
+        height: 12px;
+    }
+
+/* ✅ EDIT #6: SWIPE OVERLAY - Applied exact positioning and styling from .etanWm requirements */
+.swipe-overlay, .swipe-overlay2 {
+    position: fixed; /* ✅ Fixed positioning for viewport-relative placement */
+    top: 50%; /* ✅ Center vertically in the viewport */
+    left: 50%; /* ✅ Center horizontally in the viewport */
+    transform: translate(-50%, -50%) rotate(0deg); /* ✅ Initial state: center and no rotation */
+    font-size: 3rem;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border-radius: 1rem;
+    opacity: 0; 
+    pointer-events: none;
+    letter-spacing: 0.1em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    z-index: 50; /* ✅ Higher z-index to ensure visibility */
+}
+
+    /* Apply specific rotation for 'like' overlay */
+    .swipe-overlay.like, .swipe-overlay2.like {
+        color: #6ee7b7; /* Greenish */
+        border: 4px solid #6ee7b7;
+        transform: translate(-50%, -50%) rotate(-30deg); /* ✅ -30deg rotation for like */
+    }
+
+    /* Apply specific rotation for 'nope' overlay */
+    .swipe-overlay.nope {
+        color: #fca5a5; /* Reddish */
+        border: 4px solid #fca5a5;
+        transform: translate(-50%, -50%) rotate(30deg); /* ✅ 30deg rotation for nope */
+    }
+
+    /* Footer Buttons */
+    .action-button {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.1s;
+        margin: 0 5px;
+        color: #FF7F7F;
+    }
+    .action-button:active {
+        transform: scale(0.95);
+    }
+    .action-button.nope {
+        background-color: white;
+        color: #FF7F7F;
+    }
+    .action-button.like {
+        background-color: white;
+        color: #FF7F7F;
+    }
+    .action-button.super-like {
+        background-color: white;
+        color: #FF7F7F;
+        margin-top: 4px;
+    }
+    .action-button.nope .icon, .action-button.like .icon {
+        width: 32px;
+        height: 32px;
+    }
+    .action-button.super-like .icon {
+        width: 32px;
+        height: 32px;
+    }
+
+/* ✅ EDIT #7: PROFILE FOOTER - Applied exact padding from .etanWm structure */
+.profile-footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 393px; /* ✅ Align with main container max-width */
+    margin: 0 0 110px;
+    padding: 1rem 8px; /* ✅ CHANGED FROM: 10px TO: 8px (matching .etanWm padding: 0 8px) */
+    z-index: 20;
+}
+
+    @media (max-height: 700px) {
+        .profile-footer {
+            padding-left: 8px; /* ✅ CHANGED FROM: 12px TO: 8px */
+            padding-right: 8px; /* ✅ CHANGED FROM: 12px TO: 8px */
+        }
+    }
+
+    .profile-body.dark .profile-footer {
+        background-color: var(--bg-primary-dark);
+    }
+
+/* ✅ EDIT #8: CARD DETAILS - Applied exact padding and margins */
+.card-details {
+    padding: 10px; /* Unified container padding */
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: var(--bg-secondary-light);
+}
+
+    @media (max-height: 700px) {
+        .card-details {
+            padding: 12px;
+        }
+    }
+
+.rounded-image {
+    border-radius: var(--radius-2xl);
+}
+
+/* Discover header typography and icon sizes */
+.discover-header-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.discover-header-icon {
+    width: 22px;
+    height: 22px;
+    margin-top: -5px;
+    /* Prevent iOS Safari from applying default blue color */
+    color: currentColor;
+}
+
+/* Typography consistency */
+.profile-body .card .card-details h2,
+.profile-body .card .card-details h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary-light);
+}
+
+.profile-body.dark .card .card-details h2,
+.profile-body.dark .card .card-details h3 {
+    color: var(--text-primary-dark);
+}
+
+/* Neutralize utility bold inside card titles */
+.profile-body .card .card-details .font-bold,
+.profile-body .card .card-details .font-semibold {
+    font-weight: 500;
+}
+
+/* Paragraphs and generic body text */
+.profile-body .card .card-details p,
+.profile-body .card .card-details .leading-relaxed {
+    font-size: 14px;
+    color: var(--text-secondary-light);
+}
+
+.profile-body.dark .card .card-details p,
+.profile-body.dark .card .card-details .leading-relaxed {
+    color: var(--text-secondary-dark);
+}
+
+/* Chip and pill text align to body color */
+.basic-chip { 
+    font-size: 14px; 
+    color: var(--text-secondary-light);
+}
+
+.profile-body.dark .basic-chip { 
+    color: var(--text-secondary-dark);
+}
+
+/* My Goal pill uses light grey background */
+.goal-tag-card {
+    color: var(--text-secondary-light);
+}
+
+.profile-body.dark .goal-tag-card {
+    color: var(--text-secondary-dark);
+}
+/* Fallback overlay styles */
+.fallback-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.25);
+    z-index: 9999;
+}
+
+.fallback-card {
+    background: var(--bg-secondary-light);
+    color: var(--text-primary-light);
+    padding: 20px 24px;
+    border-radius: var(--radius-2xl);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    text-align: center;
+    max-width: 360px;
+}
+
+.profile-body.dark .fallback-card {
+    background: var(--bg-secondary-dark);
+    color: var(--text-primary-dark);
+    box-shadow: 0 8px 24px rgba(255,255,255,0.06);
+}
+
+.fallback-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 12px auto;
+    color: var(--accent-red);
+}
+
+.fallback-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.fallback-subtext {
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: var(--text-secondary-light);
+}
+
+.profile-body.dark .fallback-subtext {
+    color: var(--text-secondary-dark);
+}
+
+/* Report & Block button styling */
+.block-report-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    /* Prevent iOS Safari from applying default blue color */
+    color: var(--text-primary-light);
+    font-family: 'Josefin Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.profile-body.dark .block-report-btn {
+    color: var(--text-primary-dark);
+    border-color: #4B5563;
+}
+
+.block-report-btn:hover {
+    background-color: #F3F4F6;
+}
+
+.profile-body.dark .block-report-btn:hover {
+    background-color: #374151;
+}
+
+/* Icon inside report button - ensure it inherits button color */
+.block-report-btn .icon-small {
+    color: currentColor;
+}

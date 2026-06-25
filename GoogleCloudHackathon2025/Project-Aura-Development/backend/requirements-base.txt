@@ -1,0 +1,42 @@
+# File: requirements-base.txt
+# Author: Christian Lew
+# Date: October 21, 2025
+# Description: Core dependencies required to run the Dating App API (fast to install)
+
+# Web Framework
+fastapi==0.119.0
+uvicorn[standard]==0.37.0
+
+# Database & ORM
+psycopg2-binary==2.9.11
+sqlalchemy==2.0.44
+alembic==1.13.2
+
+# Configuration & Validation
+python-dotenv==1.1.1
+pydantic[email]==2.12.3
+pydantic-settings==2.11.0
+
+# Security & Authentication
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-jose[cryptography]==3.5.0
+
+# File Upload Support
+python-multipart==0.0.20
+
+# Real-time Communication & WebSocket Support
+python-socketio==5.11.4
+
+# External APIs
+google-cloud-storage==2.14.0
+google-generativeai==0.8.3
+
+# Gmail API for Email Notifications
+google-api-python-client==2.151.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+
+# Testing & Development
+requests==2.31.0
+httpx==0.27.0

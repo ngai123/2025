@@ -1,0 +1,252 @@
+/* Reset container so your app fills the screen */
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left; /* Let Tailwind handle text alignment */
+}
+
+/* Remove unused boilerplate classes */
+.logo, .card, .read-the-docs {
+  all: unset;
+}
+
+/* (Optional) If you want a fade/scale animation for components */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* In your global CSS file (e.g., src/index.css or src/App.css) */
+
+:root {
+  /* Ensure these variables are defined, or use direct hex codes */
+  --color-bg-primary: #e2d8b1;
+  --color-bg-secondary: #dacc99; 
+  --color-bg-tertiary: #cec5a8; 
+  
+  /* Color variables for text (add if not already defined) */
+  --color-text-primary: #000000;
+  --color-text-secondary: #666666;
+}
+
+.animated-gradient-background {
+  /* Define the gradient with your desired colors */
+  background: linear-gradient(
+    -45deg, /* Angle of the gradient */
+    var(--color-bg-primary),
+    var(--color-bg-secondary),
+    var(--color-bg-tertiary)
+  );
+  /* Make the gradient larger than the viewport to allow for movement */
+  background-size: 400% 400%;
+  /* Apply the animation */
+  animation: gradientShift 5s ease infinite; /* Slow, smooth, infinite animation */
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%; /* Start position */
+  }
+  50% {
+    background-position: 100% 50%; /* Middle position */
+  }
+  100% {
+    background-position: 0% 50%; /* End position (loops back to start) */
+  }
+}
+
+/* PhoneInput focus states - matching other inputs */
+.phone-input-wrapper .react-tel-input .form-control:focus {
+  border-color: rgba(255,127,127,0.5) !important;
+  box-shadow: 0 0 0 4px rgba(255,127,127,0.18) !important;
+  outline: none !important;
+}
+
+/* ========================================
+   AGGRESSIVE DATE PICKER PLACEHOLDER FIX
+   Forces placeholder to match other inputs (#9CA3AF)
+   ======================================== */
+
+/* Target ALL possible border elements in the date picker */
+.custom-datepicker .MuiOutlinedInput-root,
+.custom-datepicker .MuiOutlinedInput-notchedOutline,
+.custom-datepicker fieldset {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* Main date picker container */
+.custom-datepicker .MuiOutlinedInput-root {
+  height: 48px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+  transition: box-shadow 150ms ease, border-color 150ms ease !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+}
+
+/* The fieldset element that creates the border */
+.custom-datepicker .MuiOutlinedInput-root fieldset,
+.custom-datepicker .MuiOutlinedInput-notchedOutline {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  border-width: 1px !important;
+  opacity: 1 !important;
+}
+
+/* Hover state - keep the same light gray */
+.custom-datepicker .MuiOutlinedInput-root:hover fieldset,
+.custom-datepicker .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+.custom-datepicker .MuiOutlinedInput-root.Mui-hover fieldset {
+  border-color: rgba(0,0,0,0.06) !important;
+  border-width: 1px !important;
+}
+
+/* Focus state - pink border like other inputs */
+.custom-datepicker .MuiOutlinedInput-root.Mui-focused {
+  box-shadow: 0 0 0 4px rgba(255,127,127,0.18) !important;
+  outline: none !important;
+}
+
+.custom-datepicker .MuiOutlinedInput-root.Mui-focused fieldset,
+.custom-datepicker .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255,127,127,0.5) !important;
+  border-width: 1px !important;
+}
+
+/* ========================================
+   ULTIMATE FIX: FORCE PLACEHOLDER COLOR
+   Multiple approaches to ensure it works
+   ======================================== */
+
+/* Approach 1: Target the input directly */
+.custom-datepicker input {
+  color: #9CA3AF !important;
+}
+
+/* Approach 2: Target MUI input base */
+.custom-datepicker .MuiInputBase-input {
+  padding: 12px 16px !important;
+  font-size: 16px !important;
+  font-family: 'Josefin Sans', sans-serif !important;
+  height: 48px !important;
+  box-sizing: border-box !important;
+  color: #9CA3AF !important;
+}
+
+/* Approach 3: Target the outlined input specifically */
+.custom-datepicker .MuiOutlinedInput-input {
+  color: #9CA3AF !important;
+}
+
+/* Approach 4: Use attribute selector for empty value */
+.custom-datepicker input[value=""] {
+  color: #9CA3AF !important;
+}
+
+/* Approach 5: Target placeholder pseudo-element with maximum specificity */
+.custom-datepicker input::placeholder,
+.custom-datepicker .MuiInputBase-input::placeholder,
+.custom-datepicker .MuiOutlinedInput-input::placeholder,
+.custom-datepicker .MuiTextField-root input::placeholder,
+.custom-datepicker .MuiOutlinedInput-root input::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #9CA3AF !important;
+}
+
+/* Approach 6: Use webkit autofill to prevent browser override */
+.custom-datepicker input:-webkit-autofill,
+.custom-datepicker input:-webkit-autofill:hover,
+.custom-datepicker input:-webkit-autofill:focus,
+.custom-datepicker input:-webkit-autofill:active {
+  -webkit-text-fill-color: #9CA3AF !important;
+}
+
+/* Approach 7: Target MUI's internal classes */
+.MuiOutlinedInput-root.custom-datepicker .MuiOutlinedInput-input {
+  color: #9CA3AF !important;
+}
+
+/* Approach 8: Use :placeholder-shown pseudo-class */
+.custom-datepicker input:placeholder-shown {
+  color: #9CA3AF !important;
+}
+
+/* CRITICAL: Override color when date IS selected */
+.custom-datepicker input:not([value=""]):not(:placeholder-shown) {
+  color: #000000 !important;
+}
+
+.custom-datepicker .MuiInputBase-input:not([value=""]) {
+  color: #000000 !important;
+}
+
+.custom-datepicker .MuiOutlinedInput-input[value]:not([value=""]) {
+  color: #000000 !important;
+}
+
+/* Additional override for when MUI sets the value programmatically */
+.custom-datepicker:has(input:not([value=""])) input {
+  color: #000000 !important;
+}
+
+/* Calendar icon color consistency and alignment */
+.custom-datepicker .MuiInputAdornment-root {
+  margin-right: 12px !important;
+  margin-left: -3px !important;
+}
+
+.custom-datepicker .MuiInputAdornment-root svg {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Remove any default MUI focus outline */
+.custom-datepicker .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-input {
+  outline: none !important;
+}
+
+/* Ensure the date picker button doesn't affect colors */
+.custom-datepicker .MuiIconButton-root {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Override any default error states unless actually in error */
+.custom-datepicker .MuiOutlinedInput-root:not(.Mui-error) .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* Additional specificity for the focus glow effect */
+.custom-datepicker .MuiTextField-root .MuiOutlinedInput-root.Mui-focused {
+  box-shadow: 0 0 0 4px rgba(255,127,127,0.18) !important;
+}
+
+/* Override any default MUI theme colors */
+.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* Target using parent container */
+div:has(> .custom-datepicker) .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* NUCLEAR OPTION: Use !important with webkit-text-fill-color */
+.custom-datepicker * {
+  -webkit-text-fill-color: initial !important;
+}
+
+.custom-datepicker input:placeholder-shown,
+.custom-datepicker input[value=""] {
+  -webkit-text-fill-color: #9CA3AF !important;
+}
+
+.custom-datepicker input:not([value=""]):not(:placeholder-shown) {
+  -webkit-text-fill-color: #000000 !important;
+}

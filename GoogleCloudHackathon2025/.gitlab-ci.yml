@@ -1,0 +1,327 @@
+# Project Aura - GitLab CI/CD Pipeline
+# Deploys Frontend to Firebase Hosting and Backend to Cloud Run
+
+# --- GLOBAL PIPELINE RULES ---
+# This section defines when the entire pipeline will run.
+# The pipeline will only run for:
+# 1. Pushes to the 'develop' branch.
+# 2. Merge Request events (e.g., opening an MR, pushing to an MR source branch).
+# For any other branch or event, the pipeline will not be created.
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"' # Run pipeline for commits to 'develop' branch
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' # Run pipeline for Merge Request events
+      when: always
+    - when: never # For all other cases (e.g., pushes to 'main', 'release/*', etc.), do not run the pipeline
+
+# --- END GLOBAL PIPELINE RULES ---
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  # Project configuration
+  GCP_PROJECT_ID: "gaia-capstone3-prd"
+  GCP_PROJECT_NUMBER: "847374621719"
+  GCP_REGION: "asia-southeast1"
+  CLOUD_RUN_SERVICE_NAME: "project-aura-backend"
+  FIREBASE_PROJECT_ID: "project-aura-final"
+
+  # Cloud SQL configuration
+  CLOUD_SQL_CONNECTION_NAME: "gaia-capstone3-prd:asia-southeast1:project-aura"
+
+  # Docker configuration
+  DOCKER_IMAGE: "gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE_NAME}"
+
+  # Frontend configuration
+  FRONTEND_DIR: "Project-Aura-Development/frontend"
+  BACKEND_DIR: "Project-Aura-Development/backend"
+
+# ==========================================\
+# BACKEND BUILD & DEPLOY (Cloud Run)\
+# ==========================================\
+
+backend:build:
+  stage: build
+  image: google/cloud-sdk:alpine
+  tags:
+    - gitlab-runner
+  before_script:
+    # Authenticate with Google Cloud
+    - echo "$GCP_SERVICE_ACCOUNT_KEY" > ${HOME}/gcp-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+  only:
+    # With workflow:rules above, this job will only run if the pipeline is triggered on 'develop' or an MR.
+    # We explicitly list 'develop' here for clarity, and remove 'main'/'release/*' as they won't trigger the pipeline anyway.
+    refs:
+      - develop
+    changes:
+      - Project-Aura-Development/backend/**/*
+      - .gitlab-ci.yml
+  script:
+    - cd $BACKEND_DIR
+    # Create cloudbuild.yaml for cached builds
+    - |
+      cat > cloudbuild.yaml << 'CLOUDBUILD_EOF'
+      steps:
+        # Pull the latest image for cache (ignore if not exists)
+        - name: 'gcr.io/cloud-builders/docker'
+          entrypoint: 'bash'
+          args:
+            - '-c'
+            - 'docker pull $_DOCKER_IMAGE:latest || true'
+
+        # Build with cache from latest image
+        - name: 'gcr.io/cloud-builders/docker'
+          args:
+            - 'build'
+            - '--cache-from=$_DOCKER_IMAGE:latest'
+            - '-t=$_DOCKER_IMAGE:$_COMMIT_SHA'
+            - '-t=$_DOCKER_IMAGE:latest'
+            - '.'
+
+        # Push both tags
+        - name: 'gcr.io/cloud-builders/docker'
+          args: ['push', '$_DOCKER_IMAGE:$_COMMIT_SHA']
+
+        - name: 'gcr.io/cloud-builders/docker'
+          args: ['push', '$_DOCKER_IMAGE:latest']
+
+      images:
+        - '$_DOCKER_IMAGE:$_COMMIT_SHA'
+        - '$_DOCKER_IMAGE:latest'
+
+      options:
+        machineType: 'E2_HIGHCPU_8'
+      CLOUDBUILD_EOF
+    - echo "Submitting build to Google Cloud Build with caching enabled..."
+    - |
+      gcloud builds submit \
+        --config=cloudbuild.yaml \
+        --substitutions=_DOCKER_IMAGE=$DOCKER_IMAGE,_COMMIT_SHA=$CI_COMMIT_SHA \
+        --timeout=30m
+    - echo "Build completed. Verifying image availability..."
+    - |
+      # Wait for image to be queryable (max 2 minutes)
+      for i in $(seq 1 12); do
+        if gcloud container images describe $DOCKER_IMAGE:$CI_COMMIT_SHA > /dev/null 2>&1; then
+          echo "Image $DOCKER_IMAGE:$CI_COMMIT_SHA is available"
+          exit 0
+        fi
+        echo "Waiting for image to be available... ($i/12)"
+        sleep 10
+      done
+      echo "ERROR: Image not available after 2 minutes"
+      gcloud container images list-tags $DOCKER_IMAGE --limit=5 || true
+      exit 1
+
+backend:deploy:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  tags:
+    - gitlab-runner
+  before_script:
+    # Authenticate with Google Cloud
+    - echo "$GCP_SERVICE_ACCOUNT_KEY" > ${HOME}/gcp-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+  script:
+    - cd $BACKEND_DIR
+    # Deploy to Cloud Run with optimized settings for ML workloads
+    - |
+      gcloud run deploy $CLOUD_RUN_SERVICE_NAME \
+        --image $DOCKER_IMAGE:$CI_COMMIT_SHA \
+        --region $GCP_REGION \
+        --platform managed \
+        --allow-unauthenticated \
+        --port 8080 \
+        --memory 1Gi \
+        --cpu 1 \
+        --timeout 300 \
+        --concurrency 80 \
+        --min-instances 1 \
+        --max-instances 10 \
+        --add-cloudsql-instances $CLOUD_SQL_CONNECTION_NAME \
+        --clear-secrets \
+        --set-env-vars "ENVIRONMENT=production,CLOUD_SQL_CONNECTION_NAME=$CLOUD_SQL_CONNECTION_NAME,DATABASE_HOST=/cloudsql/$CLOUD_SQL_CONNECTION_NAME,DATABASE_PORT=5432,DATABASE_NAME=$DATABASE_NAME,DATABASE_USER=$DATABASE_USER,DATABASE_PASSWORD=$DATABASE_PASSWORD,SECRET_KEY=$SECRET_KEY,GCS_BUCKET_NAME=$GCS_BUCKET_NAME,GEMINI_API_KEY=$GEMINI_API_KEY"
+    # Get the service URL
+    - gcloud run services describe $CLOUD_RUN_SERVICE_NAME --region $GCP_REGION --format 'value(status.url)'
+  only:
+    # WARNING: With the global workflow:rules, this job will NEVER run automatically
+    # because the pipeline will not be triggered on the 'main' branch.
+    refs:
+      - main
+    changes:
+      - Project-Aura-Development/backend/**/*
+      - .gitlab-ci.yml
+  dependencies:
+    - backend:build
+  environment:
+    name: production
+    url: https://$CLOUD_RUN_SERVICE_NAME-$GCP_PROJECT_ID.a.run.app
+
+backend:deploy:staging:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  tags:
+    - gitlab-runner
+  before_script:
+    - echo "$GCP_SERVICE_ACCOUNT_KEY" > ${HOME}/gcp-key.json
+    - gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+    - gcloud config set project $GCP_PROJECT_ID
+  script:
+    - cd $BACKEND_DIR
+    # Deploy to Cloud Run (staging) with optimized settings for ML workloads
+    - |
+      gcloud run deploy ${CLOUD_RUN_SERVICE_NAME}-staging \
+        --image $DOCKER_IMAGE:$CI_COMMIT_SHA \
+        --region $GCP_REGION \
+        --platform managed \
+        --allow-unauthenticated \
+        --port 8080 \
+        --memory 1Gi \
+        --cpu 1 \
+        --timeout 300 \
+        --concurrency 80 \
+        --min-instances 1 \
+        --max-instances 10 \
+        --add-cloudsql-instances $CLOUD_SQL_CONNECTION_NAME \
+        --clear-secrets \
+        --set-env-vars "ENVIRONMENT=staging,CLOUD_SQL_CONNECTION_NAME=$CLOUD_SQL_CONNECTION_NAME,DATABASE_HOST=/cloudsql/$CLOUD_SQL_CONNECTION_NAME,DATABASE_PORT=5432,DATABASE_NAME=$DATABASE_NAME,DATABASE_USER=$DATABASE_USER,DATABASE_PASSWORD=$DATABASE_PASSWORD,SECRET_KEY=$SECRET_KEY,GCS_BUCKET_NAME=$GCS_BUCKET_NAME,GEMINI_API_KEY=$GEMINI_API_KEY"
+  only:
+    refs:
+      - develop
+    changes:
+      - Project-Aura-Development/backend/**/*
+      - .gitlab-ci.yml
+  dependencies:
+    - backend:build
+  environment:
+    name: staging
+    url: https://${CLOUD_RUN_SERVICE_NAME}-staging-$GCP_PROJECT_ID.a.run.app
+
+# ==========================================\
+# FRONTEND BUILD & DEPLOY (Firebase)\
+# ==========================================\
+
+# Frontend build removed - building directly in deploy jobs to avoid artifact size limits
+
+frontend:deploy:
+  stage: deploy
+  image: node:20-alpine
+  tags:
+    - gitlab-runner
+  cache:
+    key:
+      files:
+        - $FRONTEND_DIR/package-lock.json
+    paths:
+      - $FRONTEND_DIR/node_modules/
+  before_script:
+    - cd $FRONTEND_DIR
+    - npm ci --prefer-offline --no-audit
+    - npm install -g firebase-tools
+    - echo "$GCP_SERVICE_ACCOUNT_KEY" > ${HOME}/gcp-key.json
+    - export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcp-key.json
+  script:
+    - export VITE_API_BASE_URL="https://${CLOUD_RUN_SERVICE_NAME}-${GCP_PROJECT_NUMBER}.${GCP_REGION}.run.app"
+    - echo "Building with API URL $VITE_API_BASE_URL"
+    - npm run build
+    - echo "Deploying to Firebase Hosting production"
+    - echo "Project ID $FIREBASE_PROJECT_ID"
+    - firebase --version
+    - firebase deploy --only hosting --project "$FIREBASE_PROJECT_ID" --non-interactive
+  only:
+    # WARNING: With the global workflow:rules, this job will NEVER run automatically
+    # because the pipeline will not be triggered on the 'main' branch.
+    refs:
+      - main
+    changes:
+      - Project-Aura-Development/frontend/**/*
+      - .gitlab-ci.yml
+  environment:
+    name: production
+    url: https://$FIREBASE_PROJECT_ID.web.app
+
+frontend:deploy:staging:
+  stage: deploy
+  image: node:20-alpine
+  tags:
+    - gitlab-runner
+  cache:
+    key:
+      files:
+        - $FRONTEND_DIR/package-lock.json
+    paths:
+      - $FRONTEND_DIR/node_modules/
+  before_script:
+    - cd $FRONTEND_DIR
+    - npm ci --prefer-offline --no-audit
+    - npm install -g firebase-tools
+    - echo "$GCP_SERVICE_ACCOUNT_KEY" > ${HOME}/gcp-key.json
+    - export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcp-key.json
+  script:
+    - export VITE_API_BASE_URL="https://${CLOUD_RUN_SERVICE_NAME}-staging-${GCP_PROJECT_NUMBER}.${GCP_REGION}.run.app"
+    - echo "Building with API URL $VITE_API_BASE_URL"
+    - npm run build
+    - echo "Deploying to Firebase Hosting staging channel"
+    - echo "Project ID $FIREBASE_PROJECT_ID"
+    - firebase --version
+    - firebase hosting:channel:deploy staging --project "$FIREBASE_PROJECT_ID" --non-interactive --expires 30d
+  only:
+    refs:
+      - develop
+    changes:
+      - Project-Aura-Development/frontend/**/*
+      - .gitlab-ci.yml
+  environment:
+    name: staging
+    url: https://$FIREBASE_PROJECT_ID--staging.web.app
+
+# ==========================================\
+# TESTING (Optional)\
+# ==========================================\
+
+backend:test:
+  stage: test
+  image: python:3.11-slim
+  tags:
+    - gitlab-runner
+  before_script:
+    - cd $BACKEND_DIR
+    - pip install -r requirements.txt
+  script:
+    - pytest tests/ -v
+  only:
+    # With workflow:rules, this job will run if the pipeline is triggered on 'develop' or an MR.
+    # We explicitly list 'develop' here for clarity, and remove 'main' as it won't trigger the pipeline anyway.
+    - merge_requests
+    - develop
+  allow_failure: true
+
+frontend:test:
+  stage: test
+  image: node:20-alpine
+  tags:
+    - gitlab-runner
+  cache:
+    key:
+      files:
+        - $FRONTEND_DIR/package-lock.json
+    paths:
+      - $FRONTEND_DIR/node_modules/
+  before_script:
+    - cd $FRONTEND_DIR
+    - npm ci --prefer-offline --no-audit
+  script:
+    - npm run lint
+  only:
+    # With workflow:rules, this job will run if the pipeline is triggered on 'develop' or an MR.
+    # We explicitly list 'develop' here for clarity, and remove 'main' as it won't trigger the pipeline anyway.
+    - merge_requests
+    - develop
+  allow_failure: true
